@@ -1,0 +1,16 @@
+# Build output
+build/
+
+# Objects and dependency files (in case of out-of-tree compiles)
+*.o
+*.d
+
+# Valgrind
+vgcore.*
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
