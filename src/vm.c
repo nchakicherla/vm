@@ -4,6 +4,25 @@
 #include <inttypes.h>
 #include <stdio.h>
 
+const char *vm_result_str(VMResult r) {
+	switch (r) {
+		case VM_OK:
+			return "VM_OK";
+		case VM_ERR_STACK_OVERFLOW:
+			return "VM_ERR_STACK_OVERFLOW";
+		case VM_ERR_STACK_UNDERFLOW:
+			return "VM_ERR_STACK_UNDERFLOW";
+		case VM_ERR_UNKNOWN_OPCODE:
+			return "VM_ERR_UNKNOWN_OPCODE";
+		case VM_ERR_MISSING_OPERAND:
+			return "VM_ERR_MISSING_OPERAND";
+		case VM_ERR_NO_HALT:
+			return "VM_ERR_NO_HALT";
+		default:
+			return "UNKNOWN VMResult";
+	}
+}
+
 void vm_init(VM *vm) {
 	vm->chunk = NULL;
 	vm->ip = 0;

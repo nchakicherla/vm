@@ -26,6 +26,7 @@ typedef struct VM {
 	size_t sp;
 } VM;
 
+const char *vm_result_str(VMResult r);
 void vm_init(VM *vm);
 VMResult vm_push(VM *vm, Value v);
 VMResult vm_pop(VM *vm, Value *out);

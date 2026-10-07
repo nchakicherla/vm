@@ -22,7 +22,7 @@ int main(void) {
 	VM vm;
 	vm_init(&vm);
 	VMResult r = vm_run(&vm, &chunk);
-	printf("result: %d\n", r);
+	printf("result: %s\n", vm_result_str(r));
 
 	chunk_free(&chunk);
 
