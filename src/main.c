@@ -1,6 +1,7 @@
 #include "chunk.h"
 #include "opcode.h"
 #include "debug.h"
+#include "vm.h"
 
 #include <stdio.h>
 
@@ -18,17 +19,12 @@ int main(void) {
 
 	disassemble_chunk(&chunk, "TEST CHUNK");
 
+	VM vm;
+	vm_init(&vm);
+	VMResult r = vm_run(&vm, &chunk);
+	printf("result: %d\n", r);
+
 	chunk_free(&chunk);
-
-	Chunk chunk_broken;
-	chunk_init(&chunk_broken);
-
-	chunk_write(&chunk_broken, OP_ADD);
-	chunk_write(&chunk_broken, OP_PUSH);
-
-	disassemble_chunk(&chunk_broken, "BROKEN CHUNK");
-
-	chunk_free(&chunk_broken);
 
 	return 0;
 }
