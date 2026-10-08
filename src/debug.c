@@ -26,6 +26,15 @@ size_t disassemble_instruction(const Chunk *chunk, size_t offset) {
 		case OP_ADD:
 			printf("ADD\n");
 			return offset + 1;
+		case OP_SUB:
+			printf("SUB\n");
+			return offset + 1;
+		case OP_MUL:
+			printf("MUL\n");
+			return offset + 1;
+		case OP_DIV:
+			printf("DIV\n");
+			return offset + 1;
 		case OP_PRINT:
 			printf("PRINT\n");
 			return offset + 1;

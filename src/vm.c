@@ -16,6 +16,10 @@ const char *vm_result_str(VMResult r) {
 			return "VM_ERR_UNKNOWN_OPCODE";
 		case VM_ERR_MISSING_OPERAND:
 			return "VM_ERR_MISSING_OPERAND";
+		case VM_ERR_DIV_BY_ZERO:
+			return "VM_ERR_DIV_BY_ZERO";
+		case VM_ERR_INT_OVERFLOW:
+			return "VM_ERR_INT_OVERFLOW";
 		case VM_ERR_NO_HALT:
 			return "VM_ERR_NO_HALT";
 		default:
@@ -47,6 +51,53 @@ VMResult vm_pop(VM *vm, Value *out) {
 	return VM_OK;
 }
 
+static VMResult binary_op(VM *vm, uint8_t op) {
+	Value a, b;
+	VMResult res;
+	if ((res = vm_pop(vm, &b)) != VM_OK) {
+		return res;
+	}
+	if ((res = vm_pop(vm, &a)) != VM_OK) {
+		return res;
+	}
+
+	Value r;
+	switch (op) {
+		case OP_ADD: {
+			if (__builtin_add_overflow(a, b, &r)) {
+				return VM_ERR_INT_OVERFLOW;
+			}
+			break;
+		}
+		case OP_SUB: {
+			if (__builtin_sub_overflow(a, b, &r)) {
+				return VM_ERR_INT_OVERFLOW;
+			}
+			break;
+		}
+		case OP_MUL: {
+			if (__builtin_mul_overflow(a, b, &r)) {
+				return VM_ERR_INT_OVERFLOW;
+			}
+			break;
+		}
+		case OP_DIV: {
+			if (b == 0) {
+				return VM_ERR_DIV_BY_ZERO;
+			}
+			if (a == INT64_MIN && b == -1) {
+				return VM_ERR_INT_OVERFLOW;
+			}
+			r = a / b;
+			break;
+		}
+		default: {
+			return VM_ERR_UNKNOWN_OPCODE;
+		}
+	}
+	return vm_push(vm, r);
+}
+
 VMResult vm_run(VM *vm, const Chunk *chunk) {
 	vm->chunk = chunk;
 	vm->ip = 0;
@@ -70,15 +121,11 @@ VMResult vm_run(VM *vm, const Chunk *chunk) {
 				}
 				break;
 			}
-			case OP_ADD: {
-				Value a, b;
-				if ((res = vm_pop(vm, &b)) != VM_OK) {
-					return res;
-				}
-				if ((res = vm_pop(vm, &a)) != VM_OK) {
-					return res;
-				}
-				if ((res = vm_push(vm, a + b)) != VM_OK) {
+			case OP_ADD:
+			case OP_SUB:
+			case OP_MUL:
+			case OP_DIV: {
+				if ((res = binary_op(vm, op)) != VM_OK) {
 					return res;
 				}
 				break;
