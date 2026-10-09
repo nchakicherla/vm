@@ -4,6 +4,10 @@
 #include <inttypes.h>
 #include <stdio.h>
 
+#if !defined(__GNUC__) && !defined(__clang__)
+#error "requires GCC or Clang (use clang or clang-cl on Windows)"
+#endif
+
 const char *vm_result_str(VMResult r) {
 	switch (r) {
 		case VM_OK:
